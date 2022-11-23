@@ -9,7 +9,7 @@ router.get('/', async (req, res) => {
   try {
     const userData = await Tag.findAll({ include: [{model: Product, through: ProductTag}] }); 
     if (!userData) {
-      res.status(404).json({ message: 'No pr with this id!' });
+      res.status(404).json({ message: 'No product with this Tag!' });
       return;
     }
     res.status(200).json(userData);
