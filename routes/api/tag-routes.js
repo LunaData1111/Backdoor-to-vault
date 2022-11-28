@@ -1,38 +1,56 @@
-const router = require('express').Router();
-const { Tag, Product, ProductTag } = require('../../models');
+const router = require("express").Router();
+const { Tag, Product, ProductTag } = require("../../models");
 
 // The `/api/tags` endpoint
 
-router.get('/', async (req, res) => {
+router.get("/", (req, res) => {
   // find all tags
   // be sure to include its associated Product data
-  try {
-    const userData = await Tag.findAll({ include: [{model: Product, through: ProductTag}] }); 
-    if (!userData) {
-      res.status(404).json({ message: 'No product with this Tag!' });
-      return;
-    }
-    res.status(200).json(userData);
-  } catch (err) {
-    res.status(500).json(err);
-  }
+  Tag.findAll({
+    include: [{ model: Product, through: ProductTag }],
+  })
+    .then((tags) => res.status(200).json(tags))
+    .catch((err) => res.status(500).json(err));
 });
 
-router.get('/:id', (req, res) => {
+router.get("/:id", (req, res) => {
   // find a single tag by its `id`
   // be sure to include its associated Product data
+  Tag.findOne({
+    include: [{ model: Product, through: ProductTag }],
+    where: { id: req.params.id },
+  })
+    .then((tags) => res.status(200).json(tags))
+    .catch((err) => res.status(404).json(err));
 });
 
-router.post('/', (req, res) => {
+router.post("/", (req, res) => {
   // create a new tag
+  Tag.create(req.body)
+    .then((tags) => res.status(200).json(tags))
+    .catch((err) => res.status(404).json(err));
 });
-
-router.put('/:id', (req, res) => {
+//localhost:3001/api/tags/1
+router.put("/:id", (req, res) => {
   // update a tag's name by its `id` value
+  Tag.update(req.body, {
+    where: {
+      id: req.params.id,
+    },
+  })
+    .then((tags) => res.status(200).json(tags))
+    .catch((err) => res.status(404).json(err));
 });
-
-router.delete('/:id', (req, res) => {
+//localhost:3001/api/tags/1
+router.delete("/:id", (req, res) => {
   // delete on tag by its `id` value
+  Tag.destroy({
+    where: {
+      id: req.params.id,
+    },
+  })
+    .then((tags) => res.status(200).json(tags))
+    .catch((err) => res.status(404).json(err));
 });
 
 module.exports = router;
